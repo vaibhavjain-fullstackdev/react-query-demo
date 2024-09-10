@@ -13,3 +13,7 @@ export const getToDosIds = async () => {
 export const getToDo = async (id: number) => {
     return (await axiosInstance.get<ToDo>(`todos/${id}`)).data;
 }
+
+export const createToDO = async (todo : ToDo) => {
+    return (await axiosInstance.post<ToDo>('todos', todo)).data;
+}

@@ -1,4 +1,7 @@
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useCreateTodo } from "../services/mutations";
 import { useTodo, useTodosIds } from "../services/queries";
+import { ToDo } from "../types/todo";
 // import { useIsFetching } from "@tanstack/react-query";
 
 const ToDos = () => {
@@ -14,8 +17,25 @@ const ToDos = () => {
   //     return <span> Error! </span>
   //   }
 
+  const createTodoMutation = useCreateTodo();
+  const { register, handleSubmit } = useForm<ToDo>();
+
+  const handleCreateTodoSubmit: SubmitHandler<ToDo> = (todo) => {
+    createTodoMutation.mutate(todo);
+  };
+
   return (
     <>
+      <form onSubmit={handleSubmit(handleCreateTodoSubmit)}>
+        <input {...register("title")} type="text" placeholder="Title" />
+        <input
+          {...register("description")}
+          type="text"
+          placeholder="Description"
+        />
+        <button type="submit" disabled={createTodoMutation.isPending}> { createTodoMutation.isPending ? "Creating" : "Create Todo" } </button>
+      </form>
+      <br />
       {/* <p> Query Function : { todosIdsQuery.fetchStatus } </p>
     <p> Query Status : { todosIdsQuery.status }</p>
     <p> Global isFetching : { isFetching } </p> */}
@@ -26,10 +46,10 @@ const ToDos = () => {
       <ul>
         {todoQueries.map(({ data }) => (
           <li key={data?.id}>
-            <div> ID : { data?.id } </div>
+            <div> ID : {data?.id} </div>
             <span>
-                <strong> Title: </strong> { data?.title }, { " " }
-                <strong> Description: </strong> {data?.description} 
+              <strong> Title: </strong> {data?.title},{" "}
+              <strong> Description: </strong> {data?.description}
             </span>
           </li>
         ))}
